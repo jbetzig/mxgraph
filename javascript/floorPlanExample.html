@@ -21,16 +21,13 @@
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
-		function main(container)
-		{
+		function main(container) {
 			// Checks if the browser is supported
-			if (!mxClient.isBrowserSupported())
-			{
+			if (!mxClient.isBrowserSupported()) {
 				// Displays an error message if the browser is not supported.
 				mxUtils.error('Browser is not supported!', 200, false);
-			}
-			else
-			{
+			} else {
+
 				// Disables the built-in context menu
 				mxEvent.disableContextMenu(container);
 				
@@ -46,19 +43,86 @@
 								
 				// Adds cells to the model in a single step
 				graph.getModel().beginUpdate();
-				try
-				{
-					var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30); //x, y, width, height
-					var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
-					var e1 = graph.insertEdge(parent, null, '', v1, v2);
-				}
-				finally
-				{
+				try {
+					// var v1 = graph.insertVertex(parent, null, 'Hello,', 20, 20, 80, 30); //x, y, width, height
+					// var v2 = graph.insertVertex(parent, null, 'World!', 200, 150, 80, 30);
+					// graph.insertEdge(parent, null, '', v1, v2);
+					createGrid(graph, parent);
+				} finally {
 					// Updates the display
 					graph.getModel().endUpdate();
 				}
 			}
-		};
+		}
+
+		function createGrid(graph, parent) {
+			const x = 30;
+			const y = 30;
+			const numRows = 10;
+			const numColumns = 10;
+			const cellWidth = 30;
+			const cellHeight = 30;
+			const aisleWidthMultiplier = 1.5; //multiplier of cellWidth
+
+			for (let colIndex = 0; colIndex < numColumns; colIndex++) {
+				for (let rowIndex = 0; rowIndex < numRows; rowIndex++) {
+					const aisleOffset = Math.floor(colIndex / 2) * cellWidth * aisleWidthMultiplier;
+
+					graph.insertVertex(parent,
+							null, //cell id
+							`${getAisleName(colIndex)}${rowIndex + 1}`, //text content
+							(x + cellWidth * colIndex + aisleOffset), //x
+							(y + cellHeight * rowIndex), //y
+							cellWidth, //width
+							cellHeight, //height
+							`fillColor=${getClassColor(getRandomClass())}`); //style
+				}
+			}
+		}
+
+		/**
+		 * Zero-based translation of a number into a capital Latin letter (0=A, 1=B, etc.)
+		 */
+		function getAisleName(aisleNumber) {
+			if (aisleNumber >= 0 && aisleNumber < 26) //26 letters in the alphabet
+				return String.fromCharCode(65 + aisleNumber); //65 is the ASCII code for 'A'
+			else
+				return "?";
+		}
+
+		/**
+		 * Randomly returns a letter A-D
+		 */
+		function getRandomClass() {
+			switch (Math.floor(Math.random() * 4)) {
+				case 0: return 'A';
+				case 1: return 'B';
+				case 2: return 'C';
+				case 3: return 'D';
+			}
+		}
+
+		/**
+		 * Returns an appropriate heat color for this part class.
+		 * @param partClass
+		 */
+		function getClassColor(partClass) {
+			const red = "#FF0000";
+			const orange = "#FFA500";
+			const yellow = "#FFFF00";
+			const green = "#9ACD32";
+
+			switch (partClass) {
+				case 'A':
+					return red;
+				case 'B':
+					return orange;
+				case 'C':
+					return yellow;
+				case 'D':
+					return green;
+			}
+		}
 	</script>
 </head>
 
